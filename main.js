@@ -1831,7 +1831,8 @@ function buildPrompt(){
     +'• Responsive layout — optimised for classroom projector (1280×720) and student tablet\n'
     +'• Resource bars: green (#16a34a) >60, amber (#d97706) 30–60, red (#dc2626) <30\n'
     +'• Characters react visually: smile when morale/wellbeing metric >60, worried below 40\n'
-    +'• Warning icons blink next to any resource bar below 20'
+    +'• Warning icons blink next to any resource bar below 20\n'
+    +'• CRITICAL: Every slider change and every round transition MUST produce a clearly visible visual change in the SVG scene — animated, colour-shifted, or structurally different. No round should look the same as the previous one regardless of slider values.'
     +(ctx?'\n\nADDITIONAL CONTEXT FROM TEACHER:\n'+ctx:'')
     +(state.assessment?'\n\nACCESS GATE REQUIREMENT:\nThis simulation is an assessment. Before the splash screen appears, show a full-screen access gate.\n'
       +'ACCESS CODE: '+state.accessCode+'\n'
@@ -1879,10 +1880,79 @@ function buildPrompt(){
   show('out-section');smoothScroll('out-section');
 }
 
-function openInClaude(){
-  var p=document.getElementById('out-body').textContent;
-  if(!p){alert('Generate a prompt first.');return;}
-  window.open('https://claude.ai/new?q='+encodeURIComponent(p.substring(0,4000)),'_blank');
+async function openInClaude() {
+  var promptText = document.getElementById('out-body').textContent;
+  if (!promptText) { alert('Generate a prompt first.'); return; }
+
+  const SAFE_URL_LENGTH = 6000;
+  const encoded = encodeURIComponent(promptText);
+  const urlWithPrompt = 'https://claude.ai/new?q=' + encoded;
+
+  if (urlWithPrompt.length <= SAFE_URL_LENGTH) {
+    // Short enough — prefill via URL
+    window.open(urlWithPrompt, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  // Too long — copy to clipboard, open Claude blank, tell the user
+  try {
+    await navigator.clipboard.writeText(promptText);
+    window.open('https://claude.ai/new', '_blank', 'noopener,noreferrer');
+    showToast('Prompt copied — paste it into Claude (Ctrl / Cmd + V)');
+  } catch (err) {
+    // Clipboard API blocked (non-HTTPS or permissions denied) — show manual copy modal
+    showManualCopyModal(promptText);
+  }
+}
+
+function showManualCopyModal(text) {
+  // Remove any existing modal
+  var existing = document.getElementById('manual-copy-modal');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'manual-copy-modal';
+  Object.assign(overlay.style, {
+    position: 'fixed', inset: '0', background: 'rgba(10,37,64,0.7)',
+    zIndex: '9999', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    padding: '1rem'
+  });
+
+  overlay.innerHTML =
+    '<div style="background:#fff;border-radius:16px;padding:2rem;max-width:560px;width:100%;'
+    + 'box-shadow:0 20px 60px rgba(10,37,64,0.3);font-family:Nunito,sans-serif">'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:700;'
+    + 'color:#0A2540;margin-bottom:8px">Copy your prompt</div>'
+    + '<p style="font-size:14px;color:#4A4A4A;margin-bottom:12px;line-height:1.6">'
+    + 'Select all and copy the text below, then paste it into Claude.</p>'
+    + '<textarea id="mcm-text" readonly style="width:100%;height:180px;font-family:\'DM Mono\',monospace;'
+    + 'font-size:12px;padding:10px;border:1.5px solid #DDD8CE;border-radius:8px;resize:none;'
+    + 'background:#F5F2EC;color:#2C2C2C;line-height:1.7">' + text.replace(/</g,'&lt;') + '</textarea>'
+    + '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">'
+    + '<button onclick="var t=document.getElementById(\'mcm-text\');t.select();document.execCommand(\'copy\');'
+    + 'this.textContent=\'Copied!\';setTimeout(function(){this.textContent=\'Select all & copy\'},2000,this)" '
+    + 'style="padding:10px 22px;background:#0A2540;color:#fff;border:none;border-radius:100px;'
+    + 'font-family:Nunito,sans-serif;font-size:14px;font-weight:700;cursor:pointer">Select all &amp; copy</button>'
+    + '<a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" '
+    + 'style="padding:10px 22px;background:#C9A961;color:#fff;border-radius:100px;'
+    + 'font-family:Nunito,sans-serif;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center">'
+    + 'Open Claude ↗</a>'
+    + '<button onclick="document.getElementById(\'manual-copy-modal\').remove()" '
+    + 'style="padding:10px 22px;background:transparent;color:#7A7A7A;border:1.5px solid #DDD8CE;'
+    + 'border-radius:100px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;cursor:pointer">Close</button>'
+    + '</div></div>';
+
+  // Close on backdrop click
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.body.appendChild(overlay);
+  // Auto-select the text
+  setTimeout(function() {
+    var ta = document.getElementById('mcm-text');
+    if (ta) ta.select();
+  }, 80);
 }
 
 function copyPrompt(){
@@ -1927,12 +1997,22 @@ function resetAll(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function sendMod(msg){
+async function sendMod(msg){
   var full='Here is the simulation I asked you to build:\n\n[PASTE OR REGENERATE THE SIMULATION]\n\nNow please make the following change:\n\n'+msg;
-  function open(){window.open('https://claude.ai/new','_blank')}
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(full).then(function(){open();setTimeout(function(){alert('Modification request copied to clipboard — paste it into Claude after the simulation is generated.')},500)}).catch(function(){open();alert('Modification:\n\n'+msg)});
-  } else {open();alert('Modification:\n\n'+msg);}
+  const SAFE_URL_LENGTH = 6000;
+  const encoded = encodeURIComponent(full);
+  const urlWithPrompt = 'https://claude.ai/new?q=' + encoded;
+  if (urlWithPrompt.length <= SAFE_URL_LENGTH) {
+    window.open(urlWithPrompt, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(full);
+    window.open('https://claude.ai/new', '_blank', 'noopener,noreferrer');
+    showToast('Modification copied — paste into Claude (Ctrl / Cmd + V)');
+  } catch(err) {
+    showManualCopyModal(full);
+  }
 }
 
 function openCustomMod(){
@@ -1967,4 +2047,37 @@ function updateGHUrl(){
   if(st) st.textContent="https://"+uv+".github.io/[repo-name]/";
 }
 renderSubjects();setupChips();filterGradeOptions('MYP');updateFWCount();
+
+function showToast(msg, type) {
+  var container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    Object.assign(container.style, {
+      position: 'fixed', bottom: '28px', right: '28px',
+      display: 'flex', flexDirection: 'column', gap: '8px', zIndex: '9999'
+    });
+    document.body.appendChild(container);
+  }
+  var colors = { ok: '#0A2540', warn: '#b89040', error: '#8a2020' };
+  var el = document.createElement('div');
+  Object.assign(el.style, {
+    background: colors[type] || colors.ok,
+    color: '#fff', padding: '12px 22px', borderRadius: '100px',
+    fontFamily: "'Nunito',sans-serif", fontSize: '14px', fontWeight: '700',
+    boxShadow: '0 4px 20px rgba(10,37,64,0.25)',
+    borderLeft: '4px solid #C9A961',
+    opacity: '0', transition: 'opacity .25s, transform .25s',
+    transform: 'translateY(8px)'
+  });
+  el.textContent = msg;
+  container.appendChild(el);
+  requestAnimationFrame(function() {
+    el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+  });
+  setTimeout(function() {
+    el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
+    setTimeout(function() { el.remove(); }, 300);
+  }, 3000);
+}
 

@@ -580,21 +580,69 @@ select:focus { border-color: var(--gold); }
 .cl-info { background: var(--navy-pale); border-color: var(--navy-mid); color: var(--navy); }
 .cl-warn { background: var(--gold-pale); border-color: var(--gold);     color: #6a4a08; }
 
-/* Framework detail cards (Tab 2) */
+/* ── Framework detail cards (Tab 2) ── */
 .fw-detail-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1.5rem;
 }
-.fw-detail-card { border-radius: var(--r); padding: 1.25rem; border: 1.5px solid; }
-.fwdc1 { background: var(--navy-pale);  border-color: var(--myp-mid); }
-.fwdc2 { background: var(--gold-pale);  border-color: var(--gold-mid); }
-.fwdc3 { background: var(--navy-pale);  border-color: var(--myp-mid); }
-.fwdc4 { background: var(--gold-pale);  border-color: var(--gold-mid); }
-.fwdc5 { background: var(--bg);         border-color: var(--border); }
+.fw-detail-card {
+  border-radius: var(--rlg);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+/* Alternating accent strips */
+.fwdc1 .fw-detail-header,
+.fwdc3 .fw-detail-header,
+.fwdc5 .fw-detail-header { background: var(--navy); }
+.fwdc2 .fw-detail-header,
+.fwdc4 .fw-detail-header  { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); }
 
-.fw-detail-name { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
-.fw-detail-full { font-size: 13px; font-weight: 700; color: var(--ink2); margin-bottom: 8px; line-height: 1.4; }
-.fw-detail-desc { font-size: 14px; color: var(--ink2); margin-bottom: 10px; line-height: 1.6; }
-.fw-detail-adds ul { padding-left: 1.1rem; font-size: 13px; color: var(--ink2); line-height: 1.9; }
+.fw-detail-header {
+  padding: 1.25rem 1.5rem;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+}
+.fw-detail-header-left { flex: 1; }
+.fw-detail-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px; font-weight: 700; color: var(--gold);
+  margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.fw-detail-full {
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.65);
+  line-height: 1.4; text-transform: uppercase; letter-spacing: .04em;
+}
+.fw-detail-badge {
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 100px; border: 1px solid rgba(201,169,97,0.5);
+  background: rgba(201,169,97,0.15); color: var(--gold);
+  white-space: nowrap; flex-shrink: 0;
+}
+.fw-detail-body { padding: 1.25rem 1.5rem; flex: 1; }
+.fw-detail-desc {
+  font-size: 14px; color: var(--ink2); line-height: 1.7;
+  margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;
+}
+.fw-detail-adds-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--gold); margin-bottom: 8px;
+}
+.fw-detail-adds ul {
+  padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.fw-detail-adds ul li {
+  font-size: 13px; color: var(--ink2); line-height: 1.5;
+  padding: 7px 12px;
+  background: var(--navy-pale); border-radius: 8px;
+  border-left: 3px solid var(--gold-mid);
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.fw-detail-adds ul li::before {
+  content: '→'; color: var(--gold); font-weight: 700; flex-shrink: 0;
+}
 
 /* Annotation table (Tab 2) */
 .anno-tbl { width: 100%; border-collapse: collapse; font-size: 15px; }
