@@ -1878,29 +1878,60 @@ function buildPrompt(){
   } else {bar.style.display='none';}
 
   show('out-section');smoothScroll('out-section');
+
+  // Character count + open-method indicator
+  var rawText = document.getElementById('out-body').textContent;
+  var charCount = rawText.length;
+  var countBadge = document.getElementById('char-count-badge');
+  var methodBadge = document.getElementById('claude-method-badge');
+  if (countBadge) {
+    countBadge.style.display = 'inline-block';
+    countBadge.textContent = charCount.toLocaleString() + ' chars';
+  }
+  if (methodBadge) {
+    methodBadge.style.display = 'inline-block';
+    // ~8000 raw chars ≈ 16KB encoded — safe direct URL limit for claude.ai
+    if (charCount <= 8000) {
+      methodBadge.textContent = '⚡ Opens directly in Claude';
+      methodBadge.style.background = '#E6F4EA';
+      methodBadge.style.color = '#1A6B2E';
+      methodBadge.style.border = '1px solid #A8D5B0';
+    } else {
+      methodBadge.textContent = '📋 Will copy to clipboard first';
+      methodBadge.style.background = '#E6EDF5';
+      methodBadge.style.color = '#0A2540';
+      methodBadge.style.border = '1px solid #C8D8E8';
+    }
+  }
+
+  // Show/hide the paste hint below the Open in Claude button
+  var pasteHint = document.getElementById('paste-hint');
+  if (pasteHint) {
+    pasteHint.style.display = charCount > 8000 ? 'block' : 'none';
+  }
 }
+
+var CLAUDE_URL_CHAR_LIMIT = 8000;
 
 async function openInClaude() {
   var promptText = document.getElementById('out-body').textContent;
   if (!promptText) { alert('Generate a prompt first.'); return; }
 
-  const SAFE_URL_LENGTH = 6000;
-  const encoded = encodeURIComponent(promptText);
-  const urlWithPrompt = 'https://claude.ai/new?q=' + encoded;
-
-  if (urlWithPrompt.length <= SAFE_URL_LENGTH) {
-    // Short enough — prefill via URL
+  if (promptText.length <= CLAUDE_URL_CHAR_LIMIT) {
+    // Short enough — prefill directly via URL
+    const urlWithPrompt = 'https://claude.ai/new?q=' + encodeURIComponent(promptText);
     window.open(urlWithPrompt, '_blank', 'noopener,noreferrer');
     return;
   }
 
-  // Too long — copy to clipboard, open Claude blank, tell the user
+  // Too long for URL — copy to clipboard then open Claude
   try {
     await navigator.clipboard.writeText(promptText);
+    var hint = document.getElementById('paste-hint');
+    if (hint) hint.style.display = 'none';
     window.open('https://claude.ai/new', '_blank', 'noopener,noreferrer');
-    showToast('Prompt copied — paste it into Claude (Ctrl / Cmd + V)');
+    showToast('Prompt copied! Paste into Claude with Ctrl / Cmd + V');
   } catch (err) {
-    // Clipboard API blocked (non-HTTPS or permissions denied) — show manual copy modal
     showManualCopyModal(promptText);
   }
 }
@@ -1999,11 +2030,8 @@ function resetAll(){
 
 async function sendMod(msg){
   var full='Here is the simulation I asked you to build:\n\n[PASTE OR REGENERATE THE SIMULATION]\n\nNow please make the following change:\n\n'+msg;
-  const SAFE_URL_LENGTH = 6000;
-  const encoded = encodeURIComponent(full);
-  const urlWithPrompt = 'https://claude.ai/new?q=' + encoded;
-  if (urlWithPrompt.length <= SAFE_URL_LENGTH) {
-    window.open(urlWithPrompt, '_blank', 'noopener,noreferrer');
+  if (full.length <= CLAUDE_URL_CHAR_LIMIT) {
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(full), '_blank', 'noopener,noreferrer');
     return;
   }
   try {

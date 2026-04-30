@@ -340,7 +340,11 @@
         <div style="font-family:'Recoleta',serif;font-size:1.1rem;font-weight:600;color:var(--ink)">Your simulation prompt</div>
         <div style="font-size:13px;color:var(--ink3);margin-top:3px" id="out-subtitle"></div>
       </div>
-      <span class="badge" id="out-badge"></span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span class="badge" id="out-badge"></span>
+        <span id="char-count-badge" style="display:none;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:20px;background:var(--navy-pale);color:var(--ink2);border:1px solid var(--border)"></span>
+        <span id="claude-method-badge" style="display:none;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px"></span>
+      </div>
     </div>
     <div class="out-body" id="out-body"></div>
     <div class="out-footer">
@@ -352,6 +356,9 @@
         <button class="act act-br" id="btn-copy" onclick="copyPrompt()">Copy prompt</button>
         <button class="act act-out" onclick="downloadPrompt()">Download .txt</button>
         <button class="act act-out" onclick="resetAll()">Start over</button>
+      </div>
+      <div id="paste-hint" style="display:none;margin-top:12px;font-size:13px;font-weight:600;color:#0A2540;background:#E6EDF5;border:1px solid #C8D8E8;border-left:3px solid #0A2540;border-radius:8px;padding:10px 14px;line-height:1.6;">
+        📋 This prompt is long and will be <strong>copied to your clipboard</strong> when you click "Open in Claude". Paste it in with <strong>Cmd / Ctrl + V</strong>.
       </div>
     </div>
 
@@ -808,7 +815,7 @@ gate cannot be bypassed by inspecting URL or skipping JS.
 
 
 <footer>
-  <strong>Simulation Prompt Generator</strong> &nbsp;·&nbsp; Aayushi Shah
+  <strong>Simulation Prompt Generator</strong> &nbsp;·&nbsp; Aayushi Shah &nbsp;·&nbsp; Varzil Thakkar &nbsp;·&nbsp; Built with Claude AI
 </footer>
 
 <script src="main.js"></script>

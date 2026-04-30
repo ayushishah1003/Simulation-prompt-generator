@@ -46,6 +46,12 @@
   --blue-pale:     #FAF7EE;
   --blue-mid:      #DFC07A;
 
+  /* Active/selected toggle blue */
+  --toggle-blue:        #0A2540;
+  --toggle-blue-light:  #C8D8E8;
+  --toggle-blue-pale:   #E6EDF5;
+  --toggle-blue-dark:   #061829;
+
   --green:         #3D6B52;
   --green-light:   #D4E8DC;
   --green-pale:    #EEF6F1;
@@ -229,14 +235,10 @@ header, .site-header {
   cursor: pointer; transition: all .2s;
 }
 .prog-btn:hover { border-color: var(--navy-mid); color: var(--navy); transform: translateY(-1px); }
-.prog-btn.active-myp, .prog-btn.a-myp {
-  background: var(--navy); border-color: var(--navy); color: var(--white);
-}
-.prog-btn.active-dp, .prog-btn.a-dp {
-  background: var(--gold-light); border-color: var(--gold); color: #6a4a08;
-}
+.prog-btn.active-myp, .prog-btn.a-myp,
+.prog-btn.active-dp, .prog-btn.a-dp,
 .prog-btn.a-assess {
-  background: var(--navy); border-color: var(--navy); color: var(--white);
+  background: var(--toggle-blue); border-color: var(--toggle-blue-dark); color: var(--white);
 }
 
 /* ══════════════════════════════════════
@@ -253,18 +255,17 @@ header, .site-header {
   font-family: 'Nunito', sans-serif; text-align: left;
 }
 .sc:hover { transform: translateY(-2px); border-color: var(--navy-mid); box-shadow: 0 4px 16px rgba(10,37,64,0.1); }
-.sc.s-myp { border-color: var(--navy); background: var(--navy-pale); }
-.sc.s-dp  { border-color: var(--gold); background: var(--gold-pale); }
+.sc.s-myp, .sc.s-dp { border-color: var(--toggle-blue); background: var(--toggle-blue-pale); }
 .sc-icon  { font-size: 20px; }
 .sc-name  { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.3; }
 .sc-sub   { font-size: 12px; font-weight: 600; color: var(--ink3); }
 
 /* ── Framework card active state ── */
 .fw-card.fw-on {
-  border-color: var(--gold); background: var(--gold-pale);
+  border-color: var(--toggle-blue); background: var(--toggle-blue-pale);
 }
 .fw-card.fw-on .fw-check {
-  background: var(--gold); border-color: var(--gold); color: var(--white);
+  background: var(--toggle-blue); border-color: var(--toggle-blue-dark); color: var(--white);
 }
 
 /* ══════════════════════════════════════
@@ -330,14 +331,8 @@ select:focus { border-color: var(--gold); }
   color: var(--ink3); cursor: pointer; transition: all .15s; user-select: none;
 }
 .chip:hover { border-color: var(--navy-mid); color: var(--navy); }
-.chip.on, .chip.on-gold {
-  background: var(--navy); border-color: var(--navy); color: var(--white);
-}
-.chip.on-sky {
-  background: var(--gold-light); border-color: var(--gold); color: #6a4a08;
-}
-.chip.on-pink, .chip.on-blue {
-  background: var(--navy); border-color: var(--navy); color: var(--white);
+.chip.on, .chip.on-gold, .chip.on-sky, .chip.on-pink, .chip.on-blue {
+  background: var(--toggle-blue); border-color: var(--toggle-blue-dark); color: var(--white);
 }
 
 /* ══════════════════════════════════════
