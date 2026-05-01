@@ -771,6 +771,106 @@ footer strong { color: var(--gold); }
 .fade-in { animation: fadeUp .5s ease both; }
 
 /* ══════════════════════════════════════
+   SIMULATION LIBRARY
+══════════════════════════════════════ */
+.sim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.sim-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--rlg);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: box-shadow .2s, transform .2s;
+}
+.sim-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(10,37,64,0.1);
+}
+.sim-card-artifact {
+  border-style: dashed;
+  background: var(--navy-pale);
+}
+.sim-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+.sim-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sim-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.sim-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.sim-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.sim-tag-myp  { background: var(--navy-pale); color: var(--navy); border: 1px solid var(--navy-light); }
+.sim-tag-dp   { background: var(--gold-pale); color: #6a4a08; border: 1px solid var(--gold-light); }
+.sim-tag-sub  { background: var(--bg); color: var(--ink3); border: 1px solid var(--border); }
+.sim-tag-artifact { background: var(--navy); color: var(--white); border: 1px solid var(--navy); }
+.sim-desc {
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.7;
+  font-weight: 400;
+  flex: 1;
+}
+.sim-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+.sim-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all .15s;
+}
+.sim-btn-launch {
+  background: var(--navy);
+  color: var(--white);
+}
+.sim-btn-launch:hover { background: var(--navy-mid); }
+.sim-btn-code {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+}
+.sim-btn-code:hover { border-color: var(--navy); }
+
+/* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
 @media (max-width: 600px) {
@@ -778,7 +878,7 @@ footer strong { color: var(--gold); }
   .header-inner { padding: 2rem 1.25rem 1.75rem; }
   .main { padding: 1.25rem 1.25rem 3rem; }
   .header-deco { display: none; }
-  .fw-detail-grid, .framework-grid, .mod-grid, .tips-grid { grid-template-columns: 1fr; }
+  .fw-detail-grid, .framework-grid, .mod-grid, .tips-grid, .sim-grid { grid-template-columns: 1fr; }
   .prog-row, .prog-toggle { flex-direction: column; }
   .act-row, .action-row { flex-direction: column; }
 }
